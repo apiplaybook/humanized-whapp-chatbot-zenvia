@@ -1,6 +1,6 @@
 import AssistantV2 from 'ibm-watson/assistant/v2'
 import { IamAuthenticator } from 'ibm-watson/auth'
-import express from 'express'
+import express, { Request, Response } from 'express'
 import bodyParser from 'body-parser'
 import authenticationValues from './authenticationValues'
 import sendMessageToWhatsApp from './src/sendMessageToWhatsApp2'
@@ -25,7 +25,7 @@ const assistant = new AssistantV2({
 	version,
 })
 
-app.post('/hook', (req, res) => {
+app.post('/hook', (req: Request, res: Response) => {
 	// Verifica se a mensagem veio do WhatsApp
 	if (req.body.message) {
 		const message = req.body.message.contents[0].text // Armazena em uma variável a mensagem
@@ -35,7 +35,7 @@ app.post('/hook', (req, res) => {
 			.createSession({
 				assistantId,
 			})
-			.then((res) => {
+			.then((res: any) => {
 				// Manda a mensagem vinda da API da Zenvia para o assistant
 				sendMessageToWatson(
 					{
@@ -45,7 +45,7 @@ app.post('/hook', (req, res) => {
 					res.result.session_id
 				)
 			})
-			.catch((err) => {
+			.catch((err: any) => {
 				console.log(err)
 			})
 
@@ -69,10 +69,10 @@ const sendMessageToWatson = (messageInput: AssistantV2.MessageInput, sessionId: 
 			sessionId,
 			input: messageInput,
 		})
-		.then((res) => {
+		.then((res: any) => {
 			processResponse(res.result)
 		})
-		.catch((err) => {
+		.catch((err: any) => {
 			console.log(err)
 		})
 }
@@ -83,7 +83,6 @@ const processResponse = (response: any) => {
 	if (response.output.generic) {
 		if (response.output.generic.length > 0) {
 			if (response.output.generic[0].response_type === 'text') {
-				console.log('process')
 				console.log(response.output.generic[0].text)
 			}
 		}
